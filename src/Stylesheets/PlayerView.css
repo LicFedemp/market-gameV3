@@ -1,0 +1,16 @@
+.main-industry-div{
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    padding: 1%;
+}
+.div-industries{
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.div-over-industry{
+    display: flex;
+    justify-content: space-between;
+}

@@ -1,23 +1,21 @@
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
+import { useState } from "react";
+import PlayerView from "./Componentes/Objetos/PlayerView";
 
 function App() {
+  const [player, setPlayer] = useState(false);
+  const [market, setMarket] = useState(false);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      {!player && !market && (
+        <div className="elementos-iniciales">
+          <button onClick={() => setPlayer(true)}>Player</button>
+          <p>/</p>
+          <button onClick={() => setPlayer(true)}>Market Manager</button>
+        </div>
+      )}
+      {player && <PlayerView funHome={() => setPlayer(false)} />}
     </div>
   );
 }
