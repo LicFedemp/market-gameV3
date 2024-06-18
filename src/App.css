@@ -1,12 +1,83 @@
-.App{
-  display: flex;
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: Arial, sans-serif;
 }
-.elementos-inciales{
-  display:flex;
 
+.App {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.left-side, .right-side {
+  width: 50%;
+  height: 100%;
+  background-size: cover; /* Asegura que la imagen cubra toda el área */
+  background-position: center; /* Centra la imagen */
+  transition-duration: 2s;
+  transition-timing-function: ease-in-out;
+  transition-property: background-image;
+
+}
+
+.left-side {
+  background-image: url("C:\Users\licfe\OneDrive\Desktop\Fede\02_Programing\CS50\FullStack\React\market-game\src\images\image2_converted.jpg"); /* Cambia el path a la ubicación correcta de la imagen */
+}
+
+.right-side {
+  background-image: url("C:\Users\licfe\OneDrive\Desktop\Fede\02_Programing\CS50\FullStack\React\market-game\src\images\image1_converted.jpg");}
+
+.elementos-iniciales {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height:1fr;
+}
+
+.elementos-iniciales button {
+  padding: 20px 40px;
+  font-size: 24px;
+  cursor: pointer;
+  border: none;
+  border-radius: 10px;
+  transition: transform 0.3s ease;
+}
+
+.elementos-iniciales button:first-child {
+  background-color: #aa00ffda;
+  color: white;
+  margin-right: 15%;
+}
+
+.elementos-iniciales button:last-child {
+  background-color: #37dfd7e7;
+  color: white;
+  margin-left: 15%;
+  position: relative;
+  left: 5%;
+}
+
+.elementos-iniciales p {
+  font-size: 36px;
+  color: white;
+  margin: 0 20px;
+}
+
+.elementos-iniciales button:hover {
+  transform: scale(1.4);
 }
 
 .btn-scape{
   border-radius: 50%;
   align-items: center;
 }
+
+button{
+  cursor: pointer;
+}
+
+

@@ -1,16 +1,80 @@
-.main-industry-div{
+.main-industry-div {
+    
     display: flex;
     width: 100%;
+    height:105vh ;
     flex-direction: column;
     padding: 1%;
+    box-sizing: border-box;
+    transition-duration: 2s;
+    transition-timing-function: ease-in-out;
+    transition-property: background-image;
+  
+    background-size: cover; /* Asegura que la imagen cubra toda el área */
+  background-position: center;
+  background-image: url("C:\Users\licfe\OneDrive\Desktop\Fede\02_Programing\CS50\FullStack\React\market-game\src\images\first_person_image_converted.jpg")
 }
-.div-industries{
+
+.div-industries {
     display: flex;
     justify-content: space-between;
     width: 100%;
+    gap: 1%;
+    margin-top: 0.5%;
 }
 
-.div-over-industry{
+.div-over-industry {
     display: flex;
-    justify-content: space-between;
+    justify-content: space-around;
+    background-color: #aa00ff7b;
+    height: 50px;
+    align-items: center;
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.div-over-industry button {
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.div-over-industry button:hover {
+    background-color: #ddd;
+}
+
+.btn-over-industry {
+    flex-grow: 1;
+    margin: 0 5px;
+    font-size: 1rem;
+}
+
+.ronda {
+    background-color: #ffcc00;
+    font-weight: bold;
+}
+
+.btn-scape {
+    background-color: red;
+    color: white;
+    font-weight: bold;
+}
+
+@media (max-width: 768px) {
+    .div-over-industry {
+        flex-direction: column;
+        height: auto;
+    }
+    .btn-over-industry {
+        width: 100%;
+        margin: 5px 0;
+    }
+    .div-industries {
+        flex-direction: column;
+        gap: 10px;
+    }
 }
