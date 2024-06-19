@@ -1,16 +1,16 @@
 {
   "files": {
-    "main.css": "/market-gameV3/static/css/main.78a0d92e.css",
-    "main.js": "/market-gameV3/static/js/main.1dc589b5.js",
+    "main.css": "/market-gameV3/static/css/main.d9e5a45d.css",
+    "main.js": "/market-gameV3/static/js/main.868fed4f.js",
     "static/media/image1_converted.jpg": "/market-gameV3/static/media/image1_converted.c3ff5a70ab71a113cec8.jpg",
     "static/media/image2_converted.jpg": "/market-gameV3/static/media/image2_converted.7f38123362d9b25ffd15.jpg",
     "static/media/first_person_image_converted.jpg": "/market-gameV3/static/media/first_person_image_converted.247f4cec5aa9f6238074.jpg",
     "index.html": "/market-gameV3/index.html",
-    "main.78a0d92e.css.map": "/market-gameV3/static/css/main.78a0d92e.css.map",
-    "main.1dc589b5.js.map": "/market-gameV3/static/js/main.1dc589b5.js.map"
+    "main.d9e5a45d.css.map": "/market-gameV3/static/css/main.d9e5a45d.css.map",
+    "main.868fed4f.js.map": "/market-gameV3/static/js/main.868fed4f.js.map"
   },
   "entrypoints": [
-    "static/css/main.78a0d92e.css",
-    "static/js/main.1dc589b5.js"
+    "static/css/main.d9e5a45d.css",
+    "static/js/main.868fed4f.js"
   ]
 }
