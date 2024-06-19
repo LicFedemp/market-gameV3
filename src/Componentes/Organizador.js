@@ -11,6 +11,7 @@ export const A = {
   HISTORIALDINAMICO: "HISTORIALDINAMICO",
   MODIFICAR: {
     PRICE: "MODIFICAR_PRICE",
+    PRICELIMIT: "MODIFICAR_PRICELIMIT",
     QUANTITY: "MODIFICAR_QUANTITY",
     LIQUIDITY: "MODIFICAR_LIQUIDITY",
     FOCUS: "MODIFICAR_FOCUS",
@@ -27,6 +28,7 @@ export const A = {
     finish: "TRADE-FINISH",
   },
   IMPACTONEWS: "IMPACTO-NEWS",
+  TIME: { pausePlay: "PAUSEPLAY" },
 };
 
 export const POSICION = {
@@ -64,5 +66,5 @@ export const arrayVolatility = [
   "5 + D10",
   "8 + D12",
   "15 + D20",
-  "10 + D20 + D20",
+  "10 + 2D20",
 ];

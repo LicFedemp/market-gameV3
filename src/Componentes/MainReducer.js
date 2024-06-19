@@ -38,6 +38,10 @@ const estadoInicial = {
     costoTransaccion: 0,
   },
   news: [],
+  time: {
+    Pre: { minutos: 1, segundos: 0, flag: false },
+    Open: { minutos: 2, segundos: 0, flag: false },
+  },
 };
 
 const getRandomInt = (min, max) => {
@@ -66,6 +70,8 @@ const calculateDirection = (historial) => {
 };
 
 const reducer = (state, action) => {
+  let newState = { ...state };
+
   const ac = action;
   const sh = state.show;
   const stech = state.industry.Tech;
@@ -234,6 +240,13 @@ const reducer = (state, action) => {
           },
         },
       };
+    case A.MODIFICAR.PRICELIMIT:
+      const industry = Object.keys(newState.industry).forEach((key) => {
+        const industria = newState.industry[key];
+        industria.price = Math.max(industria.price, 0);
+      });
+      return newState;
+
     case A.MODIFICAR.QUANTITY:
       // mensaje en el que se pueda ingresar la nueva cantidad
       const nuevaCantidad = parseInt(
@@ -388,7 +401,7 @@ const reducer = (state, action) => {
 
     case A.IMPACTONEWS:
       const { listaNews } = action;
-      let newState = { ...state, news: listaNews };
+      newState.news = listaNews;
 
       // Reiniciar volatilidad y dirección a 0
       Object.keys(newState.industry).forEach((industryKey) => {
@@ -397,10 +410,17 @@ const reducer = (state, action) => {
       });
 
       // Sumar los valores de las noticias
+      // Establecer limites inferiores y superiores de volatilidad y direccion
       listaNews.forEach((newsItem) => {
         const { industry, volatility, direction } = newsItem;
-        newState.industry[industry].volatility += volatility;
-        newState.industry[industry].direction += direction;
+        newState.industry[industry].volatility = Math.min(
+          Math.max(newState.industry[industry].volatility + volatility, 0),
+          5
+        );
+        newState.industry[industry].direction = Math.min(
+          Math.max(newState.industry[industry].direction + direction, 0),
+          20
+        );
       });
 
       // Ajustes adicionales según el sentimiento y los movimientos de precios
@@ -408,22 +428,44 @@ const reducer = (state, action) => {
         const industry = newState.industry[industryKey];
 
         // Ajustar según el sentimiento
+        //si la direccion es extrema y el sentimiento es neutro, cambia sentimiento.
         if (industry.sentiment === SENTIMENT.POSITIVE) {
-          industry.volatility += 1;
-          industry.direction -= 1;
+          industry.volatility = Math.min(industry.volatility + 1, 5);
+          industry.direction = Math.max(industry.direction - 1, 0);
         } else if (industry.sentiment === SENTIMENT.NEGATIVE) {
-          industry.volatility += 1;
-          industry.direction += 1;
+          industry.volatility = Math.min(industry.volatility + 1, 5);
+          industry.direction = Math.min(industry.direction + 1, 20);
+        } else if (industry.sentiment === SENTIMENT.NEUTRAL) {
+          if (industry.direction <= 5) {
+            industry.sentiment = SENTIMENT.POSITIVE;
+          } else if (industry.direction >= 15) {
+            industry.sentiment = SENTIMENT.NEGATIVE;
+          }
         }
 
         // Ajustar según los últimos 3 movimientos de precios
         const directionAdjustment = calculateDirection(industry.historial);
         if (directionAdjustment !== 0) {
-          industry.direction += directionAdjustment * 3; // Ajustar la dirección según la tendencia
+          industry.direction = Math.min(
+            Math.max(industry.direction + directionAdjustment * 3, 0),
+            20
+          );
         }
       });
 
       return newState;
+
+    case A.TIME.pausePlay:
+      return {
+        ...state,
+        time: {
+          ...state.time,
+          [ac.nombre]: {
+            ...state.time[ac.nombre],
+            flag: !state.time[ac.nombre].flag,
+          },
+        },
+      };
     default:
       return { ...state };
   }

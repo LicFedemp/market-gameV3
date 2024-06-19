@@ -37,7 +37,9 @@ const MarketManager = ({ funHome }) => {
         <IndustryBar name={industryName.Tech} />
         <IndustryBar name={industryName.Health} />
         <IndustryBar name={industryName.Energy} />
-        <button className="btn-scape">X</button>
+        <button onClick={funHome} className="btn-scape">
+          X
+        </button>
       </div>
       <div className="chart-container">
         <PriceHistoryChart />

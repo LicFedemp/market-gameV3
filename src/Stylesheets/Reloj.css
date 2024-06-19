@@ -1,0 +1,18 @@
+.digital-clock {
+    font-family: 'Digital-7', sans-serif;
+    font-size: 48px;
+    color: #00ff00;
+    background-color: #000;
+    padding: 20px;
+    border-radius: 10px;
+    display: flex;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .main-div-clock{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  

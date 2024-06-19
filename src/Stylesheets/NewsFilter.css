@@ -3,11 +3,20 @@
     margin: 0 auto;
     font-family: Arial, sans-serif;
   }
-  
-  .filter-controls {
+  .news-filter h1 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  .news-head{
     display: flex;
     justify-content: space-between;
-    margin-bottom: 20px;
+    align-items: center;
+  }
+  .filter-controls {
+    display: flex;
+    justify-content:center;
+    gap: 10px;
+    margin-bottom: 10px;
   }
   
   .filter-controls label {

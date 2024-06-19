@@ -16,6 +16,7 @@ export const ContextProvider = ({ children }) => {
   const stech = state.industry.Tech;
   const shealth = state.industry.Health;
   const senergy = state.industry.Energy;
+
   //useEffect que se active solo una vez al comienzo
   useEffect(() => {
     dispatch({ type: A.INIT });
@@ -96,6 +97,11 @@ export const ContextProvider = ({ children }) => {
     senergy.historial,
     senergy.sentiment,
   ]);
+
+  //controlar precio limite inferior de 0
+  useEffect(() => {
+    dispatch({ type: A.TRADE.finish });
+  }, []);
 
   return (
     <div>

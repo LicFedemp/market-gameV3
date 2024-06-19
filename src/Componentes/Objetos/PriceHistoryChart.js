@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useGeneralContext } from "../Provider";
 import "../../Stylesheets/PriceHistoryChart.css";
 import { Line } from "react-chartjs-2";
+import ChartDataLabels from "chartjs-plugin-datalabels";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -20,7 +21,8 @@ ChartJS.register(
   LineElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
+  ChartDataLabels
 );
 
 const PriceHistoryChart = () => {
@@ -57,37 +59,36 @@ const PriceHistoryChart = () => {
         fill: false,
         backgroundColor: getColor(industryName),
         borderColor: getColor(industryName),
+        datalabels: {
+          align: "end",
+          anchor: "end",
+          color: "black",
+          borderColor: "black",
+          font: {
+            size: 15, // Tamaño de la letra
+            weight: "bold", // Peso de la letra
+          },
+        },
       };
     }),
-    // [
-    //   {
-    //     label: "Tech",
-    //     data: state.industry.Tech.historial,
-    //     borderColor: "rgba(75, 192, 192, 1)",
-    //     backgroundColor: "rgba(75, 192, 192, 0.2)",
-    //     fill: false,
-    //     tension: 0.1,
-    //   },
-    //   {
-    //     label: "Health",
-    //     data: state.industry.Health.historial,
-    //     borderColor: "rgba(255, 99, 132, 1)",
-    //     backgroundColor: "rgba(255, 99, 132, 0.2)",
-    //     fill: false,
-    //     tension: 0.1,
-    //   },
-    //   {
-    //     label: "Energy",
-    //     data: state.industry.Energy.historial,
-    //     borderColor: "rgba(54, 162, 235, 1)",
-    //     backgroundColor: "rgba(54, 162, 235, 0.2)",
-    //     fill: false,
-    //     tension: 0.1,
-    //   },
-    // ],
   };
 
   const options = {
+    plugins: {
+      legend: {
+        position: "bottom",
+      },
+      datalabels: {
+        display: true,
+        color: "black",
+        font: {
+          size: 15, // Tamaño de la letra
+          weight: "bold", // Peso de la letra
+        },
+        offset: 4, // Desplazamiento en píxeles
+        formatter: (value) => value,
+      },
+    },
     scales: {
       x: {
         display: true,
@@ -114,7 +115,7 @@ const PriceHistoryChart = () => {
     },
     plugins: {
       legend: {
-        position: "bottom",
+        position: "top",
       },
       tooltip: {
         enabled: true,
@@ -135,7 +136,6 @@ const PriceHistoryChart = () => {
   }
   return (
     <div className="chart-modal-content">
-      <h2>Price History of All Industries</h2>
       <div className="chart-content">
         <Line data={chartData} options={options} />
       </div>

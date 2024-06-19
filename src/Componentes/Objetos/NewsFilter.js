@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useGeneralContext } from "../Provider";
 import { news } from "../news";
 import { A } from "../Organizador";
+import Reloj from "./Reloj";
 import "../../Stylesheets/NewsFilter.css";
 
 const getRandomNews = (industry, type) => {
@@ -12,7 +13,7 @@ const getRandomNews = (industry, type) => {
 };
 
 const getRandomInterval = () => {
-  return Math.floor(Math.random() * (120000 - 60000 + 1)) + 90000; // Entre 1 y 2 minutos
+  return Math.floor(Math.random() * (12000 - 10000 + 1)) + 10000; // Entre 1 y 2 minutos
 };
 
 const NewsFilter = () => {
@@ -63,7 +64,12 @@ const NewsFilter = () => {
 
   return (
     <div className="news-filter">
-      <h1>News Filter</h1>
+      <div className="news-head">
+        <Reloj nombre={"Pre"} />
+        <h1>Latest News</h1>
+        <Reloj nombre={"Open"} />
+      </div>
+
       <div className="filter-controls">
         <label>
           Industry:
