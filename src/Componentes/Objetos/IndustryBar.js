@@ -1,5 +1,5 @@
 import { useGeneralContext } from "../Provider";
-import { A, arrayVolatility } from "../Organizador";
+import { A, arrayVolatility, arrayVolatility2 } from "../Organizador";
 import "../../Stylesheets/IndustryBar.css";
 import { useEffect, useState } from "react";
 
@@ -66,11 +66,16 @@ const IndustryBar = ({ name }) => {
         {industria.sentiment.charAt(0)}
       </button>
       <div className="vol-dir-industryBar">
-        <p>Volatility: {arrayVolatility[industria.volatility]}</p>
+        <p>
+          Volatility:{" "}
+          {state.market.auto
+            ? `${arrayVolatility[industria.volatility][0]}-
+          ${arrayVolatility[industria.volatility][1]}%`
+            : arrayVolatility2[industria.volatility]}
+        </p>
         <p>Direction: {industria.direction}</p>
       </div>
     </div>
   );
 };
-
 export default IndustryBar;

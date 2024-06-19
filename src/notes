@@ -6,8 +6,14 @@ Chart:
 
 Timer de ronda
 
-Barra de opciones
+Barra de opciones: al comienzo antes de elegir manager
+- Tiempos de premarket y openmarket
+- tiempo minimo y maximo de generacion de news
 
 Reducir tamano de sentiment en industria a solo 1 letra
 
 Stops predefinidos en trade: 
+
+verificar update flag en mercado automatico, no genera el avance del precio sobre ronda.
+
+

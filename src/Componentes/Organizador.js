@@ -3,6 +3,7 @@ import { news } from "./news";
 export const A = {
   TEST: "TEST",
   INIT: "INIT",
+  OPTIONS: "OPTIONS",
   SENTIMENT: "SENTIMENT",
   RONDA: "RONDA",
   SHOW: { trade: "showtrade", news: "shownews" },
@@ -29,6 +30,7 @@ export const A = {
   },
   IMPACTONEWS: "IMPACTO-NEWS",
   TIME: { pausePlay: "PAUSEPLAY" },
+  MARKET: { automatismo: "AUTOMATISMO", ejecucion: "EJECUCION" },
 };
 
 export const POSICION = {
@@ -60,11 +62,19 @@ export const industryState = {
   direction: 10,
 };
 
-export const arrayVolatility = [
+export const arrayVolatility2 = [
   "D6",
-  "3 + D6",
-  "5 + D10",
-  "8 + D12",
-  "15 + D20",
-  "10 + 2D20",
+  "6 + D6",
+  "10 + D6",
+  "15 + D6",
+  "20 + D10",
+  "30 + 2D20",
+];
+export const arrayVolatility = [
+  [1, 5],
+  [6, 10],
+  [11, 15],
+  [16, 20],
+  [21, 30],
+  [31, 50],
 ];

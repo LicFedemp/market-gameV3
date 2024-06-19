@@ -5,6 +5,7 @@ import {
   SENTIMENT,
   industryName,
   industryState,
+  arrayVolatility,
 } from "./Organizador";
 
 const estadoInicialIndustrias = Object.keys(industryName).reduce((acc, key) => {
@@ -20,6 +21,7 @@ const estadoInicial = {
     trade: false,
     tradeName: null,
     news: false,
+    cantidadNews: 6,
   },
   cash: 10000,
   totalCap: 10000 + 3 * 1000,
@@ -39,9 +41,14 @@ const estadoInicial = {
   },
   news: [],
   time: {
-    Pre: { minutos: 1, segundos: 0, flag: false },
-    Open: { minutos: 2, segundos: 0, flag: false },
+    Pre: { minutos: 0, segundos: 15, flag: false },
+    Open: { minutos: 0, segundos: 30, flag: false },
+    news: {
+      minimo: { minutos: 0, segundos: 10 },
+      maximo: { minutos: 0, segundos: 20 },
+    },
   },
+  market: { auto: true, intervaloMinimo: 20000, intervaloMaximo: 2 },
 };
 
 const getRandomInt = (min, max) => {
@@ -68,6 +75,16 @@ const calculateDirection = (historial) => {
   }
   return 0; // no hay tendencia clara
 };
+const newsSpeedMapping = {
+  1: [1, 0, 2, 0],
+  2: [0, 45, 1, 30],
+  3: [0, 30, 1, 0],
+  4: [0, 10, 0, 20],
+  default: [0, 45, 1, 30],
+};
+
+const MARKET_INTERVAL_BASE = 20000;
+const MARKET_INTERVAL_FACTOR = 3000;
 
 const reducer = (state, action) => {
   let newState = { ...state };
@@ -101,8 +118,54 @@ const reducer = (state, action) => {
         return acc;
       }, {});
 
-      return { ...state, industry: indstrias };
+      return {
+        ...state,
+        industry: indstrias,
+        time: { ...state.time, Pre: { ...state.time.Pre, flag: true } },
+      };
+    case A.OPTIONS:
+      const { options } = action;
+      const { marketAuto, marketSpeed, newsSpeed, newsShow, arrayMarketTimes } =
+        options;
+
+      const arrayNewsSpeed =
+        newsSpeedMapping[parseInt(newsSpeed)] || newsSpeedMapping.default;
+
+      return {
+        ...state,
+        market: {
+          ...state.market,
+          auto: marketAuto,
+          intervaloMaximo: marketSpeed,
+          intervaloMinimo: Math.floor(
+            MARKET_INTERVAL_BASE - marketSpeed * MARKET_INTERVAL_FACTOR
+          ),
+        },
+        time: {
+          ...state.time,
+          news: {
+            ...state.time.news,
+            minimo: { minutos: arrayNewsSpeed[0], segundos: arrayNewsSpeed[1] },
+            maximo: { minutos: arrayNewsSpeed[2], segundos: arrayNewsSpeed[3] },
+          },
+          Pre: {
+            ...state.time.Pre,
+            minutos: arrayMarketTimes[0],
+            segundos: arrayMarketTimes[1],
+          },
+          Open: {
+            ...state.time.Open,
+            minutos: arrayMarketTimes[2],
+            segundos: arrayMarketTimes[3],
+          },
+        },
+        show: {
+          ...state.show,
+          cantidadNews: newsShow,
+        },
+      };
     // Modifica el ultimo dato historico por el precio actual, si flagUpdate es true, agrega el precio actual al historial.
+
     case A.HISTORIALDINAMICO:
       const historial = state.industry[ac.ind].historial;
       const precioActual = state.industry[ac.ind].price;
@@ -142,7 +205,9 @@ const reducer = (state, action) => {
         industryKeys.forEach((key, i) => {
           const priceUpdate = window.prompt(`Update price of ${key}`);
           precios[i] =
-            isNaN(priceUpdate) || priceUpdate === null
+            isNaN(priceUpdate) ||
+            priceUpdate === null ||
+            priceUpdate.trim() === ""
               ? precios[i]
               : parseFloat(priceUpdate);
         });
@@ -150,7 +215,8 @@ const reducer = (state, action) => {
         const updateHistory = (industria, nuevoPrecio) => {
           let historial = state.industry[industria].historial;
           const flagUpdate = state.industry[industria].flagUpdate;
-          if (flagUpdate) {
+          const openMarket = state.time.Open.flag;
+          if (flagUpdate || (openMarket && !ac.update)) {
             return [...historial, nuevoPrecio];
           } else {
             historial[historial.length - 1] = nuevoPrecio;
@@ -166,6 +232,7 @@ const reducer = (state, action) => {
         return {
           ...state,
           ronda: ac.update ? state.ronda : state.ronda + 1,
+          time: { ...state.time, Pre: { ...state.time.Pre, flag: true } },
           industry: {
             ...state.industry,
             Tech: {
@@ -462,10 +529,38 @@ const reducer = (state, action) => {
           ...state.time,
           [ac.nombre]: {
             ...state.time[ac.nombre],
-            flag: !state.time[ac.nombre].flag,
+            flag: ac.flag,
           },
         },
       };
+    case A.MARKET.automatismo:
+      return {
+        ...state,
+        market: { ...state.market, auto: ac.auto },
+      };
+    // si auto es true, se ejecuta automaticamente cada un tiempo determinnado definido en provider
+    case A.MARKET.ejecucion:
+      Object.keys(newState.industry).forEach((key) => {
+        const industria = newState.industry[key];
+        const precioActual = industria.price;
+        const volatilidad = industria.volatility;
+        const direccion = industria.direction;
+
+        const variacion =
+          getRandomInt(
+            arrayVolatility[volatilidad][0],
+            arrayVolatility[volatilidad][1]
+          ) / 100;
+        const direccionVariacion = getRandomInt(0, 20) <= direccion ? -1 : 1;
+        const nuevoPrecio = Math.floor(
+          precioActual * (1 + variacion * direccionVariacion)
+        );
+        newState.industry[key].price = nuevoPrecio;
+        newState.industry[key].flagUpdate = false;
+      });
+
+      return newState;
+
     default:
       return { ...state };
   }

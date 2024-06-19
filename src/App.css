@@ -11,6 +11,22 @@ body, html {
   justify-content: center;
   align-items: center;
 }
+.option-button{
+  position: absolute;
+  display:flex;
+  top:280%;
+  height: 40px;
+  align-items: center;
+  justify-content: center;
+  background-color: #2053899b;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  padding: 10px 20px;
+  margin: 0 10px;
+
+}
 .left-side, .right-side {
   width: 50%;
   height: 100%;

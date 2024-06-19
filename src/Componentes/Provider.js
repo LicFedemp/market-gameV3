@@ -103,6 +103,34 @@ export const ContextProvider = ({ children }) => {
     dispatch({ type: A.TRADE.finish });
   }, []);
 
+  const marketIntervaloMin = state.market.intervaloMinimo;
+  const marketIntervaloMax = Math.floor(
+    (state.time.Open.minutos * 60 * 1000 + state.time.Open.segundos * 1000) /
+      state.market.intervaloMaximo
+  );
+
+  useEffect(() => {
+    if (!state.market.auto) {
+    } else {
+      let interval;
+      const executeAction = () => {
+        if (state.time.Open.flag) {
+          dispatch({ type: A.MARKET.ejecucion });
+          const randomInterval =
+            Math.random() * (marketIntervaloMax - marketIntervaloMin) +
+            marketIntervaloMin;
+          interval = setTimeout(executeAction, randomInterval);
+        }
+      };
+
+      if (state.time.Open.flag) {
+        executeAction();
+      }
+
+      return () => clearTimeout(interval);
+    }
+  }, [state.time.Open.flag, dispatch]);
+
   return (
     <div>
       <generalContext.Provider value={{ state, dispatch }}>
