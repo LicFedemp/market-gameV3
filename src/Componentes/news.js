@@ -223,21 +223,21 @@ export const news = {
         description:
           "Major hospitals report severe overcrowding, impacting patient care.",
         volatility: 1,
-        direction: 3,
+        direction: 2,
       },
       news2: {
         title: "Drug Shortages",
         description:
           "Critical drug shortages lead to delays in treatment for serious conditions.",
         volatility: 1,
-        direction: 3,
+        direction: 2,
       },
       news3: {
         title: "Healthcare Cyberattacks",
         description:
           "Healthcare systems hit by cyberattacks, compromising patient data.",
         volatility: 1,
-        direction: 3,
+        direction: 2,
       },
       news4: {
         title: "Medical Device Recalls",
@@ -369,7 +369,7 @@ export const news = {
         description:
           "Massive oil spill causes environmental catastrophe along the coastline.",
         volatility: 2,
-        direction: 3,
+        direction: 2,
       },
       news2: {
         title: "Coal Plant Closures",
@@ -411,7 +411,7 @@ export const news = {
         description:
           "Widespread blackouts hit major cities due to aging infrastructure.",
         volatility: 2,
-        direction: 3,
+        direction: 2,
       },
       news8: {
         title: "Fracking Controversy",

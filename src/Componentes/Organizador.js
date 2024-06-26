@@ -6,7 +6,12 @@ export const A = {
   OPTIONS: "OPTIONS",
   SENTIMENT: "SENTIMENT",
   RONDA: "RONDA",
-  SHOW: { trade: "showtrade", news: "shownews" },
+  SHOW: {
+    trade: "showtrade",
+    news: "shownews",
+    stops: "showstops",
+    ordenes: "showordenes",
+  },
   TOTALCAP: "TOTALCAP",
   TOTALCAPINDIVIDUAL: "TOTALCAPINDIVIDUAL",
   HISTORIALDINAMICO: "HISTORIALDINAMICO",
@@ -27,10 +32,17 @@ export const A = {
     accept: "TRADE_ACCEPT",
     costo: "TRADE_COSTO",
     finish: "TRADE-FINISH",
+    stops: "TRADE_STOPS",
+    clearStops: "TRADE_CLEARSTOPS",
   },
   IMPACTONEWS: "IMPACTO-NEWS",
   TIME: { pausePlay: "PAUSEPLAY" },
   MARKET: { automatismo: "AUTOMATISMO", ejecucion: "EJECUCION" },
+  ORDENES: {
+    nueva: "NUEVA_ORDEN",
+    eliminar: "ELIMINAR_ORDEN",
+    ejecutar: "EJECUTAR_ORDEN",
+  },
 };
 
 export const POSICION = {
@@ -49,7 +61,7 @@ export const SENTIMENT = {
   NEUTRAL: "NEUTRAL",
 };
 const priceInicial = 100;
-const quantityInicial = 10;
+const quantityInicial = 100;
 
 export const industryState = {
   price: priceInicial,
@@ -60,6 +72,7 @@ export const industryState = {
   flagUpdate: true,
   volatility: 0,
   direction: 10,
+  stops: [],
 };
 
 export const arrayVolatility2 = [
@@ -77,4 +90,19 @@ export const arrayVolatility = [
   [16, 20],
   [21, 30],
   [31, 50],
+];
+
+export const arrayMeses = [
+  "Enero",
+  "Febrero",
+  "Marzo",
+  "Abril",
+  "Mayo",
+  "Junio",
+  "Julio",
+  "Agosto",
+  "Septiembre",
+  "Octubre",
+  "Noviembre",
+  "Diciembre",
 ];

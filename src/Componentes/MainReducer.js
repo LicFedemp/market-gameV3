@@ -15,22 +15,26 @@ const estadoInicialIndustrias = Object.keys(industryName).reduce((acc, key) => {
 
 const estadoInicial = {
   rondas: 18,
-  rondasAleatorias: 5,
+  rondasAleatorias: 6,
   ronda: 7,
   show: {
     trade: false,
+    ordenes: false,
+    stops: false,
     tradeName: null,
     news: false,
     cantidadNews: 6,
   },
-  cash: 10000,
-  totalCap: 10000 + 3 * 1000,
+  cash: 100000,
+  totalCap: 100000 + 3 * 3000,
   industry: estadoInicialIndustrias,
   focus: industryName.Tech,
   liq: {
     sentimiento: 0,
     adicional: 0,
     total: 0,
+    fondoMin: 5,
+    fondoMax: 10,
   },
   trade: {
     cantidad: 0,
@@ -40,6 +44,7 @@ const estadoInicial = {
     costoTransaccion: 0,
   },
   news: [],
+  ordenes: { market: [], limit: [] },
   time: {
     Pre: { minutos: 0, segundos: 15, flag: false },
     Open: { minutos: 0, segundos: 30, flag: false },
@@ -55,6 +60,22 @@ const getRandomInt = (min, max) => {
   return Math.floor(Math.random() * (max - min)) + min;
 };
 
+const calculoLiquidezFondo = (sentimiento, posicion) => {
+  const factor =
+    sentimiento === SENTIMENT.POSITIVE
+      ? posicion === POSICION.BUY
+        ? 0.5
+        : 1.5
+      : sentimiento === SENTIMENT.NEGATIVE
+      ? posicion === POSICION.BUY
+        ? 1.5
+        : 0.5
+      : 1;
+  const minLiq = Math.floor(estadoInicial.liq.fondoMin * factor);
+  const maxLiq = Math.floor(estadoInicial.liq.fondoMax * factor);
+  const arrayLiq = [minLiq, maxLiq];
+  return arrayLiq;
+};
 const calculateDirection = (historial) => {
   const diferenciaAlcista = 1.05;
   const diferenciaBajista = 0.95;
@@ -74,6 +95,21 @@ const calculateDirection = (historial) => {
     return -1; // tendencia a la baja
   }
   return 0; // no hay tendencia clara
+};
+
+const calculateDirectionV2 = (historial) => {
+  const rangoCalculo = historial.length < 5 ? historial.length : 5;
+  let diferenciaAcumulativa = 0;
+  for (let i = 1; i <= rangoCalculo; i++) {
+    const antes = historial[historial.length - (i + 2)];
+    const despues = historial[historial.length - (i + 1)];
+    diferenciaAcumulativa += Math.min(
+      Math.floor(((despues - antes) / antes) * 100),
+      60
+    );
+  }
+  const direccion = Math.floor(diferenciaAcumulativa / 10);
+  return direccion;
 };
 const newsSpeedMapping = {
   1: [1, 0, 2, 0],
@@ -167,14 +203,10 @@ const reducer = (state, action) => {
     // Modifica el ultimo dato historico por el precio actual, si flagUpdate es true, agrega el precio actual al historial.
 
     case A.HISTORIALDINAMICO:
-      const historial = state.industry[ac.ind].historial;
       const precioActual = state.industry[ac.ind].price;
-      let historialActualizado = historial;
-      if (state.industry[ac.ind].flagUpdate) {
-        historialActualizado = [...historial, precioActual];
-      } else {
-        historialActualizado[historial.length - 1] = precioActual;
-      }
+      let historialActualizado = [...state.industry[ac.ind].historial];
+      historialActualizado[historialActualizado.length - 1] = precioActual;
+
       return {
         ...state,
         industry: {
@@ -187,81 +219,54 @@ const reducer = (state, action) => {
         },
       };
 
-    case A.TEST:
-      return { ...state };
     case A.RONDA:
       let confirmacion = true;
       if (!ac.update) {
         confirmacion = window.confirm(`Do you want to pass to the next round?`);
       }
-      if (confirmacion) {
-        const industryKeys = Object.keys(industryName); // Obtener las claves de las industrias
-        let precios = [
-          state.industry.Tech.price,
-          state.industry.Health.price,
-          state.industry.Energy.price,
-        ];
-
-        industryKeys.forEach((key, i) => {
-          const priceUpdate = window.prompt(`Update price of ${key}`);
-          precios[i] =
-            isNaN(priceUpdate) ||
-            priceUpdate === null ||
-            priceUpdate.trim() === ""
-              ? precios[i]
-              : parseFloat(priceUpdate);
-        });
-
-        const updateHistory = (industria, nuevoPrecio) => {
-          let historial = state.industry[industria].historial;
-          const flagUpdate = state.industry[industria].flagUpdate;
-          const openMarket = state.time.Open.flag;
-          if (flagUpdate || (openMarket && !ac.update)) {
-            return [...historial, nuevoPrecio];
-          } else {
-            historial[historial.length - 1] = nuevoPrecio;
-            return historial;
-          }
-        };
-
-        const newHistoryTech = updateHistory(industryName.Tech, precios[0]);
-        const newHistoryHealth = updateHistory(industryName.Health, precios[1]);
-        const newHistoryEnergy = updateHistory(industryName.Energy, precios[2]);
-
-        console.log(`nuevo historial: ${newHistoryTech}`);
-        return {
-          ...state,
-          ronda: ac.update ? state.ronda : state.ronda + 1,
-          time: { ...state.time, Pre: { ...state.time.Pre, flag: true } },
-          industry: {
-            ...state.industry,
-            Tech: {
-              ...state.industry.Tech,
-              price: precios[0],
-              historial: ac.update ? stech.historial : newHistoryTech,
-              flagUpdate: confirmacion && !ac.update ? true : false,
-            },
-            Health: {
-              ...state.industry.Health,
-              price: precios[1],
-              historial: ac.update ? shealth.historial : newHistoryHealth,
-              flagUpdate: confirmacion && !ac.update ? true : false,
-            },
-            Energy: {
-              ...state.industry.Energy,
-              price: precios[2],
-              historial: ac.update ? senergy.historial : newHistoryEnergy,
-              flagUpdate: confirmacion && !ac.update ? true : false,
-            },
-          },
-        };
-      } else {
-        return { ...state };
+      if (!confirmacion) {
+        return state;
       }
+      const newIndustry = Object.keys(state.industry).reduce((acc, key) => {
+        const industria = state.industry[key];
+        let historial = [...industria.historial];
+        const promtPrecio = window.prompt(`Update price of ${key}`);
+        const nuevoPrecio =
+          isNaN(promtPrecio) ||
+          promtPrecio === null ||
+          promtPrecio.trim() === ""
+            ? industria.price
+            : parseFloat(promtPrecio);
+        historial[historial.length - 1] = nuevoPrecio;
+
+        if (!ac.update) {
+          historial = [...historial, nuevoPrecio];
+        }
+
+        const nuevaIndustria = {
+          ...industria,
+          price: nuevoPrecio,
+          historial,
+          flagUpdate: !ac.update ? true : false,
+        };
+        acc[key] = nuevaIndustria;
+        return acc;
+      }, {});
+
+      const modificadorRonda = !ac.update ? 1 : 0;
+
+      return {
+        ...state,
+        industry: newIndustry,
+        ronda: state.ronda + modificadorRonda,
+        time: { ...state.time, Pre: { ...state.time.Pre, flag: true } },
+      };
 
     case A.SHOW.trade:
       //   console.log("hola" + ac.show);
       return { ...state, show: { ...sh, trade: ac.show, tradeName: ac.name } };
+    case A.SHOW.ordenes:
+      return { ...state, show: { ...sh, ordenes: ac.show } };
     case A.SENTIMENT:
       const nuevoSentimiento =
         industria.sentiment === SENTIMENT.NEUTRAL
@@ -307,6 +312,7 @@ const reducer = (state, action) => {
           },
         },
       };
+
     case A.MODIFICAR.PRICELIMIT:
       const industry = Object.keys(newState.industry).forEach((key) => {
         const industria = newState.industry[key];
@@ -345,27 +351,11 @@ const reducer = (state, action) => {
       return { ...state, liq: { ...state.liq, total: totalLiquidez } };
 
     case A.LIQ.SENTIMENT:
-      let minimoLiq = 1;
-      let maximoLiq = 2;
-      if (industriaFocus.sentiment === SENTIMENT.NEUTRAL) {
-      } else if (industriaFocus.sentiment === SENTIMENT.POSITIVE) {
-        if (strade.posicion === POSICION.BUY) {
-          minimoLiq = 0;
-          maximoLiq = 2;
-        } else if (strade.posicion === POSICION.SELL) {
-          minimoLiq = 1;
-          maximoLiq = 3;
-        }
-      } else if (industriaFocus.sentiment === SENTIMENT.NEGATIVE) {
-        if (strade.posicion === POSICION.BUY) {
-          minimoLiq = 1;
-          maximoLiq = 3;
-        } else if (strade.posicion === POSICION.SELL) {
-          minimoLiq = 0;
-          maximoLiq = 2;
-        }
-      }
-      const liquidez = getRandomInt(minimoLiq, maximoLiq);
+      const arrayLiq = calculoLiquidezFondo(
+        industriaFocus.sentiment,
+        strade.posicion
+      );
+      const liquidez = getRandomInt(arrayLiq[0], arrayLiq[1]);
       return { ...state, liq: { ...state.liq, sentimiento: liquidez } };
 
     case A.MODIFICAR.FOCUS:
@@ -391,7 +381,6 @@ const reducer = (state, action) => {
         posicion === POSICION.SELL || posicion === POSICION.NULL
           ? cantidadTransaccion * industriaFocus.price
           : -cantidadTransaccion * industriaFocus.price;
-      console.log(`posicion = ${posicion}`);
       return { ...state, trade: { ...strade, costoTransaccion: costoTotal } };
 
     case A.TRADE.accept:
@@ -401,7 +390,6 @@ const reducer = (state, action) => {
           ? -(cantidad - sliq.total)
           : cantidad - sliq.total
         : 0;
-      const newLA = 0;
       let newP = cantidadMayor
         ? strade.posicion === POSICION.BUY
           ? industriaFocus.price + 1
@@ -412,9 +400,6 @@ const reducer = (state, action) => {
       if (!cantidadMayor) {
         //calculo de liquidez restante + nuevo precio rebotado por la misma
         const liqRestante = sliq.total - cantidad;
-        console.log(
-          `la liquidez es mayor a la cantidad a tradear, variacion de precio segun liquidez. Liquidez restante = ${liqRestante}`
-        );
 
         if (industriaFocus.sentiment !== SENTIMENT.NEUTRAL) {
           switch (strade.posicion) {
@@ -431,15 +416,14 @@ const reducer = (state, action) => {
           }
         }
         const variacionP = Math.floor(liqRestante / promedioLiquidez);
-        console.log(
-          `variacion de precio por exceso de liquidez = ${variacionP}`
-        );
+
         newP = industriaFocus.price + variacionP;
       }
       const cashFlow = strade.cashFlow + strade.costoTransaccion;
       const stockFlow = strade.stockFlow + (strade.cantidad - newQ);
       return {
         ...state,
+        cash: state.cash + strade.costoTransaccion,
         liq: { ...sliq, adicional: 0 },
         industry: {
           ...state.industry,
@@ -451,20 +435,49 @@ const reducer = (state, action) => {
       // variar cash y stocks segun flows
       // reset flows
       const newQuantity = industriaFocus.quantity + strade.stockFlow;
-      const newCash = state.cash + strade.cashFlow;
       return {
         ...state,
         industry: {
           ...state.industry,
           [state.focus]: { ...industriaFocus, quantity: newQuantity },
         },
-        cash: newCash,
         trade: { ...strade, cashFlow: 0, stockFlow: 0 },
+      };
+    case A.TRADE.stops:
+      const { stop } = ac;
+      const stops = [...state.industry[state.focus].stops, stop];
+      return {
+        ...state,
+        industry: {
+          ...state.industry,
+          [state.focus]: { ...state.industry[state.focus], stops },
+        },
+      };
+    case A.TRADE.clearStops:
+      const { objetivo } = ac;
+      const nuevoArrayStops =
+        objetivo === "all"
+          ? []
+          : state.industry[state.focus].stops.filter(
+              (stop) => stop !== objetivo
+            );
+      return {
+        ...state,
+        industry: {
+          ...state.industry,
+          [state.focus]: {
+            ...state.industry[state.focus],
+            stops: nuevoArrayStops,
+          },
+        },
       };
     // const nuevoSentimientoLiquidez =
     case A.SHOW.news:
       console.log(`muestra news`);
       return { ...state, show: { ...sh, news: ac.show } };
+    case A.SHOW.stops:
+      console.log(`muestra stops`);
+      return { ...state, show: { ...sh, stops: ac.show } };
 
     case A.IMPACTONEWS:
       const { listaNews } = action;
@@ -511,10 +524,10 @@ const reducer = (state, action) => {
         }
 
         // Ajustar según los últimos 3 movimientos de precios
-        const directionAdjustment = calculateDirection(industry.historial);
+        const directionAdjustment = calculateDirectionV2(industry.historial);
         if (directionAdjustment !== 0) {
           industry.direction = Math.min(
-            Math.max(industry.direction + directionAdjustment * 3, 0),
+            Math.max(industry.direction + directionAdjustment, 0),
             20
           );
         }
@@ -560,6 +573,41 @@ const reducer = (state, action) => {
       });
 
       return newState;
+
+    case A.ORDENES.nueva:
+      const { industryOrden, posicionOrden, quantity, type } = ac.orden;
+      const id = state.ordenes[type].length;
+      const nuevaOrden = {
+        id: id,
+        nombre: industryOrden,
+        posicion: posicionOrden,
+        cantidad: quantity,
+        type: type,
+      };
+
+      return {
+        ...state,
+        ordenes: {
+          ...state.ordenes,
+          [type]: [...state.ordenes[type], { ...nuevaOrden }],
+        },
+      };
+    case A.ORDENES.ejecutar:
+      const { indice, position, cant } = ac;
+      // newState.show.trade = true;
+      // newState.focus = ind;
+      newState.trade.cantidad = position === POSICION.BUY ? cant : -cant;
+      newState.trade.posicion = position;
+      const nuevaListaOrden = state.ordenes.market.filter(
+        (_, i) => i !== indice
+      );
+      return {
+        ...newState,
+        ordenes: {
+          ...newState.ordenes,
+          market: nuevaListaOrden,
+        },
+      };
 
     default:
       return { ...state };

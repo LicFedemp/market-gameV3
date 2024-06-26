@@ -14,7 +14,12 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     height: 15%;
   }
-  
+  .div-leftCorner-manager{
+    display: grid;
+    grid-template-columns: repeat(2,minmax(0,1fr));
+    grid-gap: 10px;
+    grid-template-rows: auto;
+  }
   .chart-container {
     flex-grow: 1;
     display: flex;

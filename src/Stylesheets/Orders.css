@@ -1,0 +1,42 @@
+.orders-main-div{
+    display: flex;
+    flex-direction: column;
+    background-color: rgba(58, 58, 58, 0.979);
+    height: 300px;
+    width: 400px;
+    position: absolute;
+    top: 250px;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    padding: 2%;
+    border-radius: 5%;
+gap: 5%;    
+}
+
+.orders-heading{
+    display: flex;
+    gap: 3%;
+    justify-content: space-between;
+    align-items: center;
+    background-color: rgba(158, 158, 158, 0.92);
+    padding-left: 2%;
+    padding-right: 2%;
+    border-radius: 0%;
+    color: rgb(231, 234, 67);
+}
+
+.orders-heading h1{
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.orders-heading button{
+    height: 40px;
+};
+.orders-list{
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 2%;
+}
+

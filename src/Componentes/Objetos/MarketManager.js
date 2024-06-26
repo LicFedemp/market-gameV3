@@ -15,24 +15,31 @@ const MarketManager = ({ funHome }) => {
     dispatch({ type: A.SHOW.news, show: bool });
   };
 
+  const marketAction = () => {
+    dispatch({ type: A.MARKET.ejecucion });
+  };
+
   return (
     <div className="div-main-manager">
       <div className="div-over-manager">
-        <button
-          className="ronda"
-          onClick={() => {
-            passRound(true, false);
-          }}
-        >
-          Round {state.ronda}
-        </button>
-        <button
-          onClick={() => {
-            passRound(false, true);
-          }}
-        >
-          UpdatePrices
-        </button>
+        <div className="div-leftCorner-manager">
+          <button
+            className="ronda"
+            onClick={() => {
+              passRound(true, false);
+            }}
+          >
+            Round {state.ronda}
+          </button>
+          <button
+            onClick={() => {
+              passRound(false, true);
+            }}
+          >
+            UpdatePrices
+          </button>
+          <button onClick={() => marketAction()}>Market</button>
+        </div>
         {/* <button onClick={() => showNews(true)}>News</button> */}
         <IndustryBar name={industryName.Tech} />
         <IndustryBar name={industryName.Health} />

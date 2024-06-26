@@ -1,0 +1,27 @@
+/* Create order style */
+
+.create-order-form{
+    position: absolute;
+    left: 105%;
+    top: 5%;
+    display: flex;
+    flex-direction: column;
+    background-color: rgba(49, 8, 66, 0.848);
+    color: white;
+    padding: 5%;
+    width: 100px;
+    height: 250px;
+    justify-content: space-evenly;
+    align-items: center;
+    gap: 5%;
+    flex-wrap: nowrap
+};
+.create-order-form h3{
+    margin: 0%;
+    flex: 0;
+    height: 20px;
+}
+
+.btn-scape-create-order{
+    
+}
